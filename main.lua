@@ -2,6 +2,8 @@
 push = require "push"
 -- https://github.com/vrld/hump/blob/master/class.lua
 Class = require 'class'
+-- Importar clase Pelota
+require 'Pelota'
 
 VIRTUAL_WIDTH = 432
 VIRTUAL_HEIGHT = 243
@@ -14,7 +16,6 @@ PADDLE_SPEED = 200
 function love.load()
 
     love.graphics.setDefaultFilter('nearest', 'nearest')
-
     --"seed" RNG
     math.randomseed(os.time())
     
@@ -27,14 +28,6 @@ function love.load()
     player1Y = 10
     player2Y = VIRTUAL_HEIGHT - 30
 
-    -- Pelota posiciones
-    ballX = VIRTUAL_WIDTH / 2-2
-    ballY = VIRTUAL_HEIGHT / 2-2
-
-    -- Pelota Direccion Random
-    ballDX = math.random(2) == 1 and 100 or -100
-    ballDY = math.random(-50,50)
-
     push:setupScreen(
         VIRTUAL_WIDTH,
         VIRTUAL_HEIGHT,
@@ -44,7 +37,10 @@ function love.load()
         resizable = false,
         vsync = true
     })
-    
+
+    -- Crear objeto pelota usando clase Pelota
+    pelota = Pelota(VIRTUAL_WIDTH / 2 - 2, VIRTUAL_HEIGHT / 2 - 2, 4, 4)
+
     gameState = 'start'
 end
 
@@ -57,10 +53,7 @@ function love.keypressed(key)
         else
             gameState = 'start'
             -- Reiniciar Pelota
-            ballX = VIRTUAL_WIDTH / 2-2
-            ballY = VIRTUAL_HEIGHT / 2-2
-            ballDX = math.random(2) == 1 and 100 or -100
-            ballDY = math.random(-50,50)
+            pelota:reset()
         end
     end
 end
@@ -80,8 +73,7 @@ function love.update(dt)
     end
    
     if gameState == 'play' then
-        ballX = ballX + ballDX * dt
-        ballY = ballY + ballDY * dt
+        pelota:update(dt)
     end
 end
 
@@ -107,6 +99,6 @@ function love.draw()
     -- paleta 2
     love.graphics.rectangle('fill', VIRTUAL_WIDTH - 15, player2Y, 5,20)
     -- ball
-        love.graphics.rectangle('fill', ballX, ballY, 4,4)
+    pelota:render()
     push:finish()
 end
