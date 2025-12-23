@@ -4,6 +4,8 @@ push = require "push"
 Class = require 'class'
 -- Importar clase Pelota
 require 'Pelota'
+-- Importar clase Paleta
+require 'Paleta'
 
 VIRTUAL_WIDTH = 432
 VIRTUAL_HEIGHT = 243
@@ -25,9 +27,6 @@ function love.load()
     player1Score = 0
     player2Score = 0
 
-    player1Y = 10
-    player2Y = VIRTUAL_HEIGHT - 30
-
     push:setupScreen(
         VIRTUAL_WIDTH,
         VIRTUAL_HEIGHT,
@@ -40,11 +39,15 @@ function love.load()
 
     -- Crear objeto pelota usando clase Pelota
     pelota = Pelota(VIRTUAL_WIDTH / 2 - 2, VIRTUAL_HEIGHT / 2 - 2, 4, 4)
+    -- Crear objetos jugador con clase Paleta
+    jugador1 = Paleta(10, 30, 5, 20)
+    jugador2 = Paleta(VIRTUAL_WIDTH - 10, VIRTUAL_HEIGHT - 30, 5, 20)
 
     gameState = 'start'
 end
 
 function love.keypressed(key)
+
     if key == 'escape' then
         love.event.quit()
     elseif key == 'enter' or key == 'return' then
@@ -61,23 +64,31 @@ end
 function love.update(dt)
 
     if love.keyboard.isDown('w') then
-        player1Y = math.max(0,player1Y + -PADDLE_SPEED * dt)
+        jugador1.dy = -PADDLE_SPEED
     elseif love.keyboard.isDown('s') then
-        player1Y = math.min(VIRTUAL_HEIGHT - 20,player1Y + PADDLE_SPEED * dt)
+        jugador1.dy = PADDLE_SPEED
+    else
+        jugador1.dy = 0
     end
 
     if love.keyboard.isDown('up') then
-        player2Y = math.max(0,player2Y + -PADDLE_SPEED * dt)
+        jugador2.dy = -PADDLE_SPEED
     elseif love.keyboard.isDown('down') then
-        player2Y = math.min(VIRTUAL_HEIGHT - 20,player2Y + PADDLE_SPEED * dt)
+        jugador2.dy = PADDLE_SPEED
+    else
+        jugador2.dy = 0
     end
    
     if gameState == 'play' then
         pelota:update(dt)
     end
+    -- Actualizar objetos jugador
+    jugador1:update(dt)
+    jugador2:update(dt)
 end
 
 function love.draw()
+
     push:start()
     love.graphics.clear(40/255, 45/255, 52/255,1)
     -- texto
@@ -95,9 +106,9 @@ function love.draw()
     end
     
     -- paleta 1
-    love.graphics.rectangle('fill', 10, player1Y, 5,20)
+    jugador1:render()
     -- paleta 2
-    love.graphics.rectangle('fill', VIRTUAL_WIDTH - 15, player2Y, 5,20)
+    jugador2:render()
     -- ball
     pelota:render()
     push:finish()
