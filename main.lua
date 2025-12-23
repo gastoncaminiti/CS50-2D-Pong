@@ -18,6 +18,8 @@ PADDLE_SPEED = 200
 function love.load()
 
     love.graphics.setDefaultFilter('nearest', 'nearest')
+    -- Configurar titulo de ventana
+    love.window.setTitle('Clone Pong')
     --"seed" RNG
     math.randomseed(os.time())
     
@@ -111,5 +113,16 @@ function love.draw()
     jugador2:render()
     -- ball
     pelota:render()
+    -- llamada a ver FPS
+    verFPS()
+    
     push:finish()
 end
+
+function verFPS()
+    love.graphics.setFont(smallFont)
+    love.graphics.setColor(0,1,0,1)
+    love.graphics.print('FPS: '..tostring(love.timer.getFPS()), 10, 10)
+    love.graphics.setColor(1,1,1,1)
+end
+
