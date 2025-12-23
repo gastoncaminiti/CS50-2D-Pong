@@ -25,3 +25,16 @@ end
 function Pelota:render()
     love.graphics.rectangle('fill', self.x, self.y, self.ancho, self.alto)
 end
+
+function Pelota:colision(paleta)
+
+    if self.x > paleta.x + paleta.ancho or paleta.x > self.x + self.ancho then
+        return false
+    end
+
+    if self.y > paleta.y + paleta.alto or paleta.y > self.y + self.alto then
+        return false
+    end
+
+    return true
+end

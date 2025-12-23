@@ -64,7 +64,42 @@ function love.keypressed(key)
 end
 
 function love.update(dt)
+    if gameState == 'play' then
+        -- Verificar colisiones entre pelota y jugador 1
+        if pelota:colision(jugador1) then
+            pelota.dx = -pelota.dx * 1.03
+            pelota.x = jugador1.x + 5
 
+            if pelota.dy < 0 then
+                pelota.dy = -math.random(10, 150)
+            else
+                pelota.dy = math.random(10, 150)
+            end
+        end
+        -- Verificar colisiones entre pelota y jugador 2
+        if pelota:colision(jugador2) then
+            pelota.dx = -pelota.dx * 1.03
+            pelota.x = jugador2.x - 4
+
+            if pelota.dy < 0 then
+                pelota.dy = -math.random(10, 150)
+            else
+                pelota.dy = math.random(10, 150)
+            end
+        end
+        -- Detectar bordes y cambiar direccion
+        if pelota.y <= 0 then
+            pelota.y = 0
+            pelota.dy = -pelota.dy
+        end
+
+        if pelota.y >= VIRTUAL_HEIGHT - 4 then
+            pelota.y = VIRTUAL_HEIGHT - 4
+            pelota.dy = -pelota.dy
+        end
+    end
+
+    -- movimiento jugador 1
     if love.keyboard.isDown('w') then
         jugador1.dy = -PADDLE_SPEED
     elseif love.keyboard.isDown('s') then
@@ -72,7 +107,7 @@ function love.update(dt)
     else
         jugador1.dy = 0
     end
-
+    -- movimiento jugador 2
     if love.keyboard.isDown('up') then
         jugador2.dy = -PADDLE_SPEED
     elseif love.keyboard.isDown('down') then
@@ -115,7 +150,7 @@ function love.draw()
     pelota:render()
     -- llamada a ver FPS
     verFPS()
-    
+
     push:finish()
 end
 
