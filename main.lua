@@ -1,4 +1,7 @@
+-- https://github.com/Ulydev/push
 push = require "push"
+-- https://github.com/vrld/hump/blob/master/class.lua
+Class = require 'class'
 
 VIRTUAL_WIDTH = 432
 VIRTUAL_HEIGHT = 243
