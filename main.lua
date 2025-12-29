@@ -30,6 +30,7 @@ function love.load()
     player2Score = 0
 
     servingPlayer = 1
+    winningPlayer = 0
 
     push:setupScreen(
         VIRTUAL_WIDTH,
@@ -59,6 +60,18 @@ function love.keypressed(key)
             gameState = 'serve'
         elseif gameState == 'serve' then
             gameState = 'play'
+        elseif gameState == 'done' then
+            gameState = 'serve'
+            pelota:reset()
+
+            player1Score = 0
+            player2Score = 0
+            
+            if winningPlayer == 1 then
+                servingPlayer = 2
+            else
+                servingPlayer = 1
+            end
         end
     end
 end
@@ -104,21 +117,34 @@ function love.update(dt)
             pelota.y = VIRTUAL_HEIGHT - 4
             pelota.dy = -pelota.dy
         end
+
+        -- Score Jugador 2
+        if pelota.x < 0 then
+            servingPlayer = 1
+            player2Score = player2Score + 1
+
+            if player2Score == 2 then
+                winningPlayer = 2
+                gameState = 'done'
+            else
+                pelota:reset()
+                gameState = 'serve'
+            end
+        end  
+        -- Score Jugador 1
+        if pelota.x > VIRTUAL_WIDTH then
+            servingPlayer = 2
+            player1Score = player1Score + 1
+
+            if player1Score == 2 then
+                winningPlayer = 1
+                gameState = 'done'
+            else
+                pelota:reset()
+                gameState = 'serve'
+            end
+        end 
     end
-    -- Score Jugador 2
-    if pelota.x < 0 then
-        servingPlayer = 1
-        player2Score = player2Score + 1
-        pelota:reset()
-        gameState = 'serve'
-    end  
-    -- Score Jugador 1
-    if pelota.x > VIRTUAL_WIDTH then
-        servingPlayer = 2
-        player1Score = player1Score + 1
-        pelota:reset()
-        gameState = 'serve'
-    end  
     -- movimiento jugador 1
     if love.keyboard.isDown('w') then
         jugador1.dy = -PADDLE_SPEED
@@ -163,6 +189,12 @@ function love.draw()
         love.graphics.printf('Enter para Jugar!', 0, 20, VIRTUAL_WIDTH, 'center')
     elseif gameState == 'play' then
         -- jugar
+    elseif gameState == 'done' then
+        -- UI messages
+        love.graphics.setFont(largeFont)
+        love.graphics.printf('Jugador ' .. tostring(winningPlayer) .. ' Gano!', 0, 10, VIRTUAL_WIDTH, 'center')
+        love.graphics.setFont(smallFont)
+        love.graphics.printf('Enter para Reiniciar!', 0, 50, VIRTUAL_WIDTH, 'center')
     end
    
     -- paleta 1
