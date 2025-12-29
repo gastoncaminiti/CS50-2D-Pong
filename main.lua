@@ -26,6 +26,13 @@ function love.load()
     largeFont = love.graphics.newFont('font.ttf', 32)
     smallFont = love.graphics.newFont('font.ttf', 8)
 
+    sonidos = 
+    {
+        ['pared_hit'] = love.audio.newSource('Sonidos/pared_hit.wav',  'static'),
+        ['pelota_hit'] = love.audio.newSource('Sonidos/pelota_hit.wav', 'static'),
+        ['puntaje'] = love.audio.newSource('Sonidos/puntaje.wav','static')
+    }
+
     player1Score = 0
     player2Score = 0
 
@@ -38,7 +45,7 @@ function love.load()
         WINDOW_WIDTH, 
         WINDOW_HEIGHT, {
         fullscreen = false,
-        resizable = false,
+        resizable = true,
         vsync = true
     })
 
@@ -95,6 +102,8 @@ function love.update(dt)
             else
                 pelota.dy = math.random(10, 150)
             end
+
+            sonidos['pelota_hit']:play()
         end
         -- Verificar colisiones entre pelota y jugador 2
         if pelota:colision(jugador2) then
@@ -106,22 +115,26 @@ function love.update(dt)
             else
                 pelota.dy = math.random(10, 150)
             end
+            sonidos['pelota_hit']:play()
         end
         -- Detectar bordes y cambiar direccion
         if pelota.y <= 0 then
             pelota.y = 0
             pelota.dy = -pelota.dy
+            sonidos['pared_hit']:play()
         end
 
         if pelota.y >= VIRTUAL_HEIGHT - 4 then
             pelota.y = VIRTUAL_HEIGHT - 4
             pelota.dy = -pelota.dy
+            sonidos['pared_hit']:play()
         end
 
         -- Score Jugador 2
         if pelota.x < 0 then
             servingPlayer = 1
             player2Score = player2Score + 1
+            sonidos['puntaje']:play()
 
             if player2Score == 2 then
                 winningPlayer = 2
@@ -135,7 +148,8 @@ function love.update(dt)
         if pelota.x > VIRTUAL_WIDTH then
             servingPlayer = 2
             player1Score = player1Score + 1
-
+            sonidos['puntaje']:play()
+            
             if player1Score == 2 then
                 winningPlayer = 1
                 gameState = 'done'
