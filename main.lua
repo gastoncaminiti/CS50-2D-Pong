@@ -56,17 +56,22 @@ function love.keypressed(key)
         love.event.quit()
     elseif key == 'enter' or key == 'return' then
         if gameState == 'start' then
+            gameState = 'serve'
+        elseif gameState == 'serve' then
             gameState = 'play'
-        else
-            gameState = 'start'
-            -- Reiniciar Pelota
-            pelota:reset()
         end
     end
 end
 
 function love.update(dt)
-    if gameState == 'play' then
+    if gameState == 'serve' then
+        pelota.dy = math.random(-50, 50)
+        if servingPlayer == 1 then
+            pelota.dx = math.random(140, 200)
+        else
+            pelota.dx = -math.random(140, 200)
+        end
+    elseif gameState == 'play' then
         -- Verificar colisiones entre pelota y jugador 1
         if pelota:colision(jugador1) then
             pelota.dx = -pelota.dx * 1.03
@@ -105,14 +110,14 @@ function love.update(dt)
         servingPlayer = 1
         player2Score = player2Score + 1
         pelota:reset()
-        gameState = 'start'
+        gameState = 'serve'
     end  
     -- Score Jugador 1
     if pelota.x > VIRTUAL_WIDTH then
         servingPlayer = 2
         player1Score = player1Score + 1
         pelota:reset()
-        gameState = 'start'
+        gameState = 'serve'
     end  
     -- movimiento jugador 1
     if love.keyboard.isDown('w') then
@@ -143,18 +148,21 @@ function love.draw()
 
     push:start()
     love.graphics.clear(40/255, 45/255, 52/255,1)
-    -- texto
-    love.graphics.setFont(largeFont)
-    love.graphics.printf(" Hola, Pong! ", 0, 20, VIRTUAL_WIDTH, 'center')
-    love.graphics.print(tostring(player1Score), VIRTUAL_WIDTH / 2 - 50, VIRTUAL_HEIGHT / 2 + 80)
-    love.graphics.print(tostring(player2Score), VIRTUAL_WIDTH / 2 + 30, VIRTUAL_HEIGHT / 2 + 80)
+    -- llamada a ver Puntaje
+    verPuntaje()
     
     love.graphics.setFont(smallFont)
-    -- Ver Estado
+    -- Dibujar segun Estado
     if gameState == 'start' then
-        love.graphics.printf('Estado Start!', 0, 60, VIRTUAL_WIDTH, 'center')
-    else
-        love.graphics.printf('Estado Play!', 0, 60, VIRTUAL_WIDTH, 'center')
+        love.graphics.setFont(smallFont)
+        love.graphics.printf('Bienvenido a Pong Clone!', 0, 10, VIRTUAL_WIDTH, 'center')
+        love.graphics.printf('Enter para Empezar', 0, 20, VIRTUAL_WIDTH, 'center')
+    elseif gameState == 'serve' then
+        love.graphics.setFont(smallFont)
+        love.graphics.printf('Jugador ' .. tostring(servingPlayer) .. " sirviendo ", 0, 10, VIRTUAL_WIDTH, 'center')
+        love.graphics.printf('Enter para Jugar!', 0, 20, VIRTUAL_WIDTH, 'center')
+    elseif gameState == 'play' then
+        -- jugar
     end
    
     -- paleta 1
@@ -167,6 +175,12 @@ function love.draw()
     verFPS()
 
     push:finish()
+end
+
+function verPuntaje()
+    love.graphics.setFont(largeFont)
+    love.graphics.print(tostring(player1Score), VIRTUAL_WIDTH / 2 - 50, VIRTUAL_HEIGHT / 3)
+    love.graphics.print(tostring(player2Score), VIRTUAL_WIDTH / 2 + 30, VIRTUAL_HEIGHT / 3)
 end
 
 function verFPS()
