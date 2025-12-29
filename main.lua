@@ -29,6 +29,8 @@ function love.load()
     player1Score = 0
     player2Score = 0
 
+    servingPlayer = 1
+
     push:setupScreen(
         VIRTUAL_WIDTH,
         VIRTUAL_HEIGHT,
@@ -98,7 +100,20 @@ function love.update(dt)
             pelota.dy = -pelota.dy
         end
     end
-
+    -- Score Jugador 2
+    if pelota.x < 0 then
+        servingPlayer = 1
+        player2Score = player2Score + 1
+        pelota:reset()
+        gameState = 'start'
+    end  
+    -- Score Jugador 1
+    if pelota.x > VIRTUAL_WIDTH then
+        servingPlayer = 2
+        player1Score = player1Score + 1
+        pelota:reset()
+        gameState = 'start'
+    end  
     -- movimiento jugador 1
     if love.keyboard.isDown('w') then
         jugador1.dy = -PADDLE_SPEED
@@ -141,7 +156,7 @@ function love.draw()
     else
         love.graphics.printf('Estado Play!', 0, 60, VIRTUAL_WIDTH, 'center')
     end
-    
+   
     -- paleta 1
     jugador1:render()
     -- paleta 2
